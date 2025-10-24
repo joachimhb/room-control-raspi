@@ -74,6 +74,8 @@ const configPath = processenv('smart-home-config-path', '../smart-home-setup/sha
 const tasksString = processenv('smart-home-tasks', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
 const raspi = processenv('smart-home-raspi', 'wohnzimmer');
 
+logger.info(`INIT: ${raspi} - ${tasksString}`);
+
 const config = require(configPath);
 
 (async function() {
