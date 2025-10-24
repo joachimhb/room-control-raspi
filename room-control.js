@@ -138,7 +138,7 @@ const config = require(configPath);
 
   await mqttClient.init(handleMqttMessage);
 
-  await mqttClient.publish(automationInit(raspi));
+  await mqttClient.publish(automationInit(raspi), {value: 'done'}, {retain: true});
 
   for(const roomId of Object.keys(tasks)) {
     const room = _.find(config.rooms, {id: roomId});
