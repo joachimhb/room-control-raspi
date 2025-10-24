@@ -178,14 +178,17 @@ const config = require(configPath);
     }
   }
 
-  logger.debug(JSON.stringify({tasks, status}, null, 2));
+  // logger.debug(JSON.stringify({tasks, status}, null, 2));
 
-  // for(const room of rooms) {
-  //   roomControls[room.id] = new RoomControl({
-  //     logger,
-  //     room,
-  //     mqttClient,
-  //     status: status[room.id],
-  //   });
-  // }
- })();
+  for(const roomId of Object.keys(tasks)) {
+    const room = _.find(config.rooms, {id: roomId});
+
+    roomControls[room.id] = new RoomControl({
+      logger,
+      room,
+      mqttClient,
+      status: status[room.id],
+      tasks: tasks[roomId],
+    });
+  }
+})();
