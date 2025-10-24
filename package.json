@@ -7,7 +7,7 @@
   "author": "joachim.haecker-becker@arcor.de",
   "license": "MIT",
   "dependencies": {
-    "@joachimhb/smart-home-common": "git+https://github.com/joachimhb/smart-home-common#0.1.1",
+    "@joachimhb/smart-home-common": "git+https://github.com/joachimhb/smart-home-common#0.1.2",
     "@joachimhb/smart-home-raspi-access": "git+https://github.com/joachimhb/smart-home-raspi-access#0.1.1",
     "check-types-2": "11.4.0",
     "classnames": "2.3.1",

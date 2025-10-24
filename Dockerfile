@@ -64,4 +64,4 @@ RUN npm install --production
 
 ENV LD_LIBRARY_PATH /usr/local/lib/
 
-CMD ["/usr/local/bin/node", "/app/shutter-control.js"]
+CMD ["/usr/local/bin/node", "/app/room-control.js"]

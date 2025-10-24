@@ -70,9 +70,9 @@ try {
   }
 }
 
-const configPath = processenv('smart-home-config-path', '../smart-home-setup/shared/config.js');
-const tasksString = processenv('smart-home-tasks', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
-const raspi = processenv('smart-home-raspi', 'wohnzimmer');
+const configPath = processenv('SMART_HOME_CONFIG_PATH', '../smart-home-setup/shared/config.js');
+const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
+const raspi = processenv('SMART_HOME_RASPI', 'wohnzimmer');
 
 logger.info(`INIT: ${raspi} - ${tasksString}`);
 
