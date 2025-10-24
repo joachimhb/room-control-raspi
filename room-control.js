@@ -71,8 +71,8 @@ try {
 }
 
 const configPath = processenv('smart-home-config-path', '../smart-home-setup/shared/config.js');
-const tasksString = processenv('smart-home-tasks', 'wohnzimmer:shutters,schlafzimmer:shutters, wohnzimmer:dht22, bad:lights, bad:fans, schlafzimmer:windows');
-const raspi = processenv('smart-home-raspi');
+const tasksString = processenv('smart-home-tasks', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
+const raspi = processenv('smart-home-raspi', 'wohnzimmer');
 
 const config = require(configPath);
 
