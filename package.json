@@ -14,9 +14,12 @@
     "fs-extra": "8.1.0",
     "lodash": "4.17.21",
     "log4js": "6.3.0",
+    "millisecond": "0.1.2",
+    "moment": "^2.30.1",
     "pigpio": "3.3.1",
     "pigpio-dht": "1.1.1",
-    "processenv": "^3.0.9",
+    "pretty-ms": "7.0.1",
+    "processenv": "3.0.9",
     "rpio": "2.4.2"
   },
   "devDependencies": {
