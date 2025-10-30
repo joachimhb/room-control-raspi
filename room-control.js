@@ -26,6 +26,7 @@ const {
   lightStatus,
 
   buttonActive,
+  buttonStatus,
 
   temperatureStatus,
   humidityStatus,
@@ -118,7 +119,7 @@ const config = require(configPath);
         status[areaId] = status[areaId] || {};
         status[areaId][element] = status[areaId][element] || {};
         status[areaId][element][elementId] = data.value;
-      } else if(area === 'room' && element === 'shutter' && ['up', 'down', 'stop', 'max'].includes(subArea)) {
+      } else if(area === 'room' && element === 'shutter' && ['up', 'down', 'stop', 'toggle', 'max'].includes(subArea)) {
         if(roomControls[areaId]) {
           roomControls[areaId].shutter(subArea, elementId, data.value);
         }
@@ -157,6 +158,7 @@ const config = require(configPath);
     if(tasks[room.id].includes('buttons')) {
       for(const button of room.buttons || []) {
         await mqttClient.subscribe(buttonActive(room.id, button.id));
+        await mqttClient.subscribe(buttonStatus(room.id, button.id));
       }
     }
 
@@ -193,4 +195,8 @@ const config = require(configPath);
       tasks: tasks[roomId],
     });
   }
+
+  setInterval(() => {
+    logger.debug('Status', JSON.stringify(status, null, 2));
+  }, 30000);
 })();
