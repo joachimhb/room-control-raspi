@@ -84,8 +84,12 @@ try {
 const configPath = processenv('SMART_HOME_CONFIG_PATH', '../smart-home-setup/shared/config.js');
 // kammer
 // const tasksString = processenv('SMART_HOME_TASKS', 'bad:dht22,bad:lights,bad:fans,bad:dht22,bad:lights,bad:fans,wc:dht22,wc:lights,wc:fans');
+// arbeitszimmer
+const tasksString = processenv('SMART_HOME_TASKS', 'schlafzimmer:dht22,schlafzimmer:shutters,kinderzimmer:shutters,arbeitszimmer:shutters,schlafzimmer:windows,kinderzimmer:windows,arbeitszimmer:windows,schlafzimmer:buttons,kinderzimmer:buttons,arbeitszimmer:buttons');
+
+
 // wohnzimmer
-const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
+// const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
 const raspi = processenv('SMART_HOME_RASPI', 'wohnzimmer');
 
 logger.info(`INIT: ${raspi} - ${tasksString}`);
@@ -117,18 +121,6 @@ const config = require(configPath);
   const roomControls = {};
 
   // logger.debug(JSON.stringify({tasks, status}, null, 2));
-
-  for(const roomId of Object.keys(tasks)) {
-    const room = _.find(config.rooms, {id: roomId});
-
-    roomControls[room.id] = new RoomControl({
-      logger,
-      room,
-      mqttClient,
-      getStatus: () =>  status[roomId] || {},
-      tasks: tasks[roomId],
-    });
-  }
 
   const handleMqttMessage = async(topic, data) => {
     try {
@@ -172,6 +164,18 @@ const config = require(configPath);
   };
 
   await mqttClient.init(handleMqttMessage);
+
+  for(const roomId of Object.keys(tasks)) {
+    const room = _.find(config.rooms, {id: roomId});
+
+    roomControls[room.id] = new RoomControl({
+      logger,
+      room,
+      mqttClient,
+      getStatus: () =>  status[roomId] || {},
+      tasks: tasks[roomId],
+    });
+  }
 
   await mqttClient.publish(automationInit(raspi), {value: 'done'}, {retain: true});
 
