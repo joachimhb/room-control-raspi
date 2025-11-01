@@ -7,6 +7,7 @@ const log4js       = require('log4js');
 const rpio         = require('rpio');
 const pigpio       = require('pigpio');
 const {processenv} = require('processenv');
+const delay        = require('delay');
 
 const RoomControl = require('./lib/RoomControl.js');
 
@@ -22,6 +23,15 @@ const {
   shutterStatus,
   shutterToggle,
   shutterMax,
+
+  fanControl,
+  fanSpeed,
+  fanTrailingTime,
+  fanMinRunTime,
+  fanLightTimeout,
+  fanMinHumidityThreshold,
+  fanMaxHumidityThreshold,
+
   windowStatus,
   lightStatus,
 
@@ -72,6 +82,9 @@ try {
 }
 
 const configPath = processenv('SMART_HOME_CONFIG_PATH', '../smart-home-setup/shared/config.js');
+// kammer
+// const tasksString = processenv('SMART_HOME_TASKS', 'bad:dht22,bad:lights,bad:fans,bad:dht22,bad:lights,bad:fans,wc:dht22,wc:lights,wc:fans');
+// wohnzimmer
 const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
 const raspi = processenv('SMART_HOME_RASPI', 'wohnzimmer');
 
@@ -103,6 +116,20 @@ const config = require(configPath);
 
   const roomControls = {};
 
+  // logger.debug(JSON.stringify({tasks, status}, null, 2));
+
+  for(const roomId of Object.keys(tasks)) {
+    const room = _.find(config.rooms, {id: roomId});
+
+    roomControls[room.id] = new RoomControl({
+      logger,
+      room,
+      mqttClient,
+      getStatus: () =>  status[roomId] || {},
+      tasks: tasks[roomId],
+    });
+  }
+
   const handleMqttMessage = async(topic, data) => {
     try {
       logger.debug('handleMqttMessage', topic, data);
@@ -111,26 +138,33 @@ const config = require(configPath);
         area,
         areaId,
         element,
-        elementId = 'main',
-        subArea = 'status',
+        elementId,
+        subArea,
       ] = topic.split('/');
 
-      if(area === 'room' && subArea === 'status') {
-        status[areaId] = status[areaId] || {};
-        status[areaId][element] = status[areaId][element] || {};
-        status[areaId][element][elementId] = data.value;
-      } else if(area === 'room' && element === 'shutter' && ['up', 'down', 'stop', 'toggle', 'max'].includes(subArea)) {
-        if(roomControls[areaId]) {
-          roomControls[areaId].shutter(subArea, elementId, data.value);
+      if(area === 'room') {
+        const finalPath = [
+          areaId,
+          element,
+          elementId,
+          subArea,
+        ].filter(Boolean);
+
+        _.set(status, finalPath, data);
+
+        if(element === 'shutter' && ['up', 'down', 'stop', 'toggle', 'max'].includes(subArea)) {
+          if(roomControls[areaId]) {
+            roomControls[areaId].shutter(subArea, elementId, data.value);
+          }
+        } else if(element === 'button' && subArea === 'active') {
+          if(roomControls[areaId]) {
+            roomControls[areaId].button(subArea, elementId, data.value);
+          }
+        } else if(element === 'fan') {
+          await delay(1000);
+
+          roomControls[areaId][element](elementId, data);
         }
-      } else if(area === 'room' && element === 'button' && subArea === 'active') {
-        if(roomControls[areaId]) {
-          roomControls[areaId].button(subArea, elementId, data.value);
-        }
-      } else if(area === 'room' && element === 'fan') {
-        roomControls[areaId][subArea](elementId, data);
-      } else if(area === 'room' && element === 'light') {
-        roomControls[areaId][element](elementId, data);
       }
     } catch(err) {
       logger.warn(`Failed to handle mqtt message ${topic}`, err);
@@ -180,23 +214,17 @@ const config = require(configPath);
         await mqttClient.subscribe(lightStatus(room.id, light.id));
       }
     }
+
+    if(tasks[room.id].includes('fans')) {
+      for(const fan of room.fans || []) {
+        await mqttClient.subscribe(fanControl(room.id, fan.id));
+        await mqttClient.subscribe(fanSpeed(room.id, fan.id));
+        await mqttClient.subscribe(fanTrailingTime(room.id, fan.id));
+        await mqttClient.subscribe(fanMinRunTime(room.id, fan.id));
+        await mqttClient.subscribe(fanLightTimeout(room.id, fan.id));
+        await mqttClient.subscribe(fanMinHumidityThreshold(room.id, fan.id));
+        await mqttClient.subscribe(fanMaxHumidityThreshold(room.id, fan.id));
+      }
+    }
   }
-
-  // logger.debug(JSON.stringify({tasks, status}, null, 2));
-
-  for(const roomId of Object.keys(tasks)) {
-    const room = _.find(config.rooms, {id: roomId});
-
-    roomControls[room.id] = new RoomControl({
-      logger,
-      room,
-      mqttClient,
-      status: status[room.id],
-      tasks: tasks[roomId],
-    });
-  }
-
-  setInterval(() => {
-    logger.debug('Status', JSON.stringify(status, null, 2));
-  }, 30000);
 })();

@@ -23,7 +23,7 @@ const {Shutter} = controls;
     label: 'manual',
     powerGpio: 6,
     directionGpio: 12,
-    fullCloseMs: 20000
+    fullCloseMs: 20000,
   };
 
   const shutterCtrl = new Shutter({
@@ -43,4 +43,3 @@ const {Shutter} = controls;
   await delay(2000);
   shutterCtrl.stop();
 })();
-
