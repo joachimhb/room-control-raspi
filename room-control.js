@@ -85,11 +85,11 @@ const configPath = processenv('SMART_HOME_CONFIG_PATH', '../smart-home-setup/sha
 // kammer
 // const tasksString = processenv('SMART_HOME_TASKS', 'bad:dht22,bad:lights,bad:fans,bad:dht22,bad:lights,bad:fans,wc:dht22,wc:lights,wc:fans');
 // arbeitszimmer
-const tasksString = processenv('SMART_HOME_TASKS', 'schlafzimmer:dht22,schlafzimmer:shutters,kinderzimmer:shutters,arbeitszimmer:shutters,schlafzimmer:windows,kinderzimmer:windows,arbeitszimmer:windows,schlafzimmer:buttons,kinderzimmer:buttons,arbeitszimmer:buttons');
+// const tasksString = processenv('SMART_HOME_TASKS', 'schlafzimmer:dht22,schlafzimmer:shutters,kinderzimmer:shutters,arbeitszimmer:shutters,schlafzimmer:windows,kinderzimmer:windows,arbeitszimmer:windows,schlafzimmer:buttons,kinderzimmer:buttons,arbeitszimmer:buttons');
 
 
 // wohnzimmer
-// const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
+const tasksString = processenv('SMART_HOME_TASKS', 'wohnzimmer:shutters,wohnzimmer:dht22,wohnzimmer:windows');
 const raspi = processenv('SMART_HOME_RASPI', 'wohnzimmer');
 
 logger.info(`INIT: ${raspi} - ${tasksString}`);
