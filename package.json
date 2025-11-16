@@ -8,7 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "@joachimhb/smart-home-common": "git+https://github.com/joachimhb/smart-home-common#0.2.0",
-    "@joachimhb/smart-home-raspi-access": "git+https://github.com/joachimhb/smart-home-raspi-access#0.1.1",
+    "@joachimhb/smart-home-raspi-access": "git+https://github.com/joachimhb/smart-home-raspi-access#0.1.2",
     "check-types-2": "11.4.0",
     "delay": "5.0.0",
     "fs-extra": "8.1.0",
