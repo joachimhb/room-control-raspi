@@ -1,4 +1,4 @@
-FROM node:15-stretch
+FROM node:18
 # FROM node:13-stretch
 
 # ##############################################################################
@@ -22,7 +22,7 @@ RUN \
     unzip \
     wget \
     xz-utils \
-    python \
+    python3 \
     vim
 
 RUN \
