@@ -122,6 +122,19 @@ const config = require(configPath);
 
   // logger.debug(JSON.stringify({tasks, status}, null, 2));
 
+
+  for(const roomId of Object.keys(tasks)) {
+    const room = _.find(config.rooms, {id: roomId});
+
+    roomControls[room.id] = new RoomControl({
+      logger,
+      room,
+      mqttClient,
+      getStatus: () =>  status[roomId] || {},
+      tasks: tasks[roomId],
+    });
+  }
+
   const handleMqttMessage = async(topic, data) => {
     try {
       logger.debug('handleMqttMessage', topic, data);
@@ -153,9 +166,11 @@ const config = require(configPath);
             roomControls[areaId].button(subArea, elementId, data.value);
           }
         } else if(element === 'fan') {
-          await delay(1000);
+          if(roomControls[areaId]) {
+            await delay(500);
 
-          roomControls[areaId][element](elementId, data);
+            roomControls[areaId][element](elementId, data);
+          }
         }
       }
     } catch(err) {
@@ -164,18 +179,6 @@ const config = require(configPath);
   };
 
   await mqttClient.init(handleMqttMessage);
-
-  for(const roomId of Object.keys(tasks)) {
-    const room = _.find(config.rooms, {id: roomId});
-
-    roomControls[room.id] = new RoomControl({
-      logger,
-      room,
-      mqttClient,
-      getStatus: () =>  status[roomId] || {},
-      tasks: tasks[roomId],
-    });
-  }
 
   await mqttClient.publish(automationInit(raspi), {value: 'done'}, {retain: true});
 
